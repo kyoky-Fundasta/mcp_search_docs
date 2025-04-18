@@ -1,4 +1,4 @@
-# pylint: disable = C0301
+# pylint: disable = C0301, W0718
 """
 Module to evaluate the relevancy of the reference documents to the query.
 This code is scripted for free tier Gemini account.
@@ -119,9 +119,14 @@ You **must not modify, rewrite, or paraphrase** the original content—your job 
 
     # print("\nTime:", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     # print("Total Token size:", response.usage_metadata.total_token_count, "\n")
+    # print(f"response.text: {response.text}")
 
-    output = json.loads(response.text)
-
+    try:
+        output = json.loads(response.text)
+    except Exception as e:
+        logging.error("--- Error: %s\nresponse.text:%s", e, response.text)
+        return input_item
+    logging.info("--- Gemini's output: %s", output)
     output["url"] = input_item["url"]
     output["query"] = input_item["query"]
     output["title"] = input_item["title"]
@@ -153,6 +158,22 @@ async def check_docs(input_list: list) -> list:
 
     # Remove unrelated content
     if isinstance(responses, list) and responses:
+
+        # Sometimes Gemini LLM failed to check the documentation text and causing JSON Parsing error.
+        # This is a safety net for the case.
+        score_sum = 0
+        failed_item_index = []
+        for i, item in enumerate(responses):
+            if "score" in item.keys():
+                score_sum += int(item["score"])
+            else:
+                failed_item_index.append(i)
+        avg = score_sum / (len(responses) - len(failed_item_index))
+        if len(failed_item_index) != 0:
+            for i in failed_item_index:
+                responses[i]["score"] = avg
+                responses[i]["comment"] = "N/A"
+
         responses = [item for item in responses if int(item["score"]) != 0]
         return sorted(responses, key=lambda x: int(x["score"]), reverse=True)
     else:
@@ -160,8 +181,6 @@ async def check_docs(input_list: list) -> list:
 
 
 if __name__ == "__main__":
-    from test_data import dict_1, dict_2, dict_3
 
-    for i in [dict_1, dict_2, dict_3]:
-        pass
-        # print(asyncio.run(gemini_client(i)))
+    pass
+    # fr = asyncio.run(check_docs(test_sample))
