@@ -59,7 +59,7 @@ Option 1 :次のコマンドをプログラムルーツフォルダで実行
 mcp install main.py
 
 Option 2 :Claude no configureファイルに直接書き込む(以下はWindowsの例)
-
+```
 "docs": {
     "command": "uv",
     "args": [
@@ -69,4 +69,4 @@ Option 2 :Claude no configureファイルに直接書き込む(以下はWindows�
 "main.py"
     ]
 }
-  
+```
