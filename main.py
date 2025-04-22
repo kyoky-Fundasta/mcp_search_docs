@@ -52,24 +52,16 @@ async def get_document(query: str, library: str) -> str:
             *[get_contents(url_dict) for url_dict in fetched_urls]
         )
         fetched_texts = [item for item in fetched_texts if item and item.get("text")]
+
         if fetched_texts:
             try:
                 texts_with_scores = await check_docs(fetched_texts)
-                if (
-                    int(texts_with_scores[0]["score"]) >= 95
-                    and int(
-                        texts_with_scores[1]["score"] + texts_with_scores[2]["score"]
-                    )
-                    >= 160
-                ):
+                scores = [int(_["score"]) for _ in texts_with_scores]
+                if len(scores) >= 3 and scores[0] == 100 and scores[1] == 100:
+                    texts_with_scores = texts_with_scores[:2]
+                elif len(scores) >= 4 and scores[0] >= 90 and sum(scores[:3]) >= 250:
                     texts_with_scores = texts_with_scores[:3]
-                elif (
-                    int(texts_with_scores[0]["score"]) >= 80
-                    and int(
-                        texts_with_scores[1]["score"] + texts_with_scores[4]["score"]
-                    )
-                    >= 250
-                ):
+                elif len(scores) >= 5 and scores[0] >= 80 and sum(scores[:5]) >= 350:
                     texts_with_scores = texts_with_scores[:5]
 
                 logging.info("### No of selected documents: %d", len(texts_with_scores))

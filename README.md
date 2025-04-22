@@ -1,7 +1,7 @@
 
 # Introduction
 
-_このプラグラムはユーザー登録の**公式ドキュメント**から必要な内容を調べてユーザーの質問に答えます。
+このプラグラムはユーザー登録の**公式ドキュメント**から必要な内容を調べてユーザーの質問に答えます。
 **MCP**プロトコルを遵守し**Claude**に登録可能なかたちでデザインされています。_
 
 # Features
@@ -18,7 +18,7 @@ _このプラグラムはユーザー登録の**公式ドキュメント**から
 
 # 新しいドキュメントを登録する方法
 
-docs.listファイルを開き、docs_url辞書に追加したいドキュメントの名前（任意）とURLを書き入れてください。
+docs_list.pyファイルを開き、docs_url辞書に追加したいドキュメントの名前（任意）とURLを書き入れてください。
 
 # API消費量について
 一度の質問に対してGoogle Custom Search JSON APIを１回（失敗やエラーのため再検索時、その都度追加消費）
@@ -43,17 +43,19 @@ Claude desktopを無料バージョンで使用している場合、そのトー
 
 # 設定手順
 
-１. Python(>=3.11)とClaude Desktopを事前にインストールしてください。
+1. Python(>=3.11)とClaude Desktopを事前にインストールしてください。
 
-２．レポジトリをクローンしてワークデレクとりに移動
+2．レポジトリをクローンしてワークデレクとりに移動
 
-３．バーチャル環境設定： uv venv
+3．バーチャル環境設定： uv venv (uvをインストールしてない場合は先にインストールしてください: pip install uv)
 
-４．uv sync (uvをインストールしてない場合は先にインストールしてください: pip install uv)
+4. .venv\scripts\activate
 
-５．APIキーセットアップ
+5．uv sync 
 
-６．ツールを登録：
+6．APIキーセットアップ
+
+7．ツールを登録：
 
 Option 1 :次のコマンドをプログラムルーツフォルダで実行
 mcp install main.py
@@ -66,7 +68,7 @@ Option 2 :Claude no configureファイルに直接書き込む(以下はWindows�
     "--directory",
     "C:\\Users\\--path-to-the-docs-directory",
     "run",
-"main.py"
+    "main.py"
     ]
 }
 ```

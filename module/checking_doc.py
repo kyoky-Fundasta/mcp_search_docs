@@ -6,6 +6,7 @@ You may use async version of code with paid API service.
 """
 
 import os
+import re
 
 # import time
 import asyncio
@@ -22,12 +23,28 @@ load_dotenv()
 gemini_api_key = os.getenv("Gemini_API_KEY")
 
 
+def cleaner(text: str, escape_quotes=False, strip_control=False) -> str:
+    """
+    A helper function to clean text data.
+    """
+    if escape_quotes:
+        text = text.replace('"', r"\"")
+    if strip_control:
+        text = re.sub(r"[\x00-\x1F]+", " ", text)
+    return text
+
+
 async def gemini_client(input_item: dict) -> dict:
     """
     Check the given text relevant to the query.
 
     input_item format : {"query":query, "title":title, "url":url, "text":text}
     """
+
+    cleaned_title = input_item["title"]
+    cleaned_query = input_item["query"]
+    cleaned_text = input_item["text"]
+
     client = genai.Client(
         api_key=gemini_api_key,
     )
@@ -39,9 +56,9 @@ async def gemini_client(input_item: dict) -> dict:
             parts=[
                 types.Part.from_text(
                     text=f"""
-                                     -title: {input_item["title"]}
-                                     -query: {input_item["query"]}
-                                     -text: {input_item["text"]}
+                                     -title: {cleaned_title}
+                                     -query: {cleaned_query}
+                                     -text: {cleaned_text}
                                      """
                 ),
             ],
@@ -120,9 +137,9 @@ You **must not modify, rewrite, or paraphrase** the original content—your job 
     # print("\nTime:", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     # print("Total Token size:", response.usage_metadata.total_token_count, "\n")
     # print(f"response.text: {response.text}")
-
+    cleaned_output = cleaner(response.text, strip_control=True)
     try:
-        output = json.loads(response.text)
+        output = json.loads(cleaned_output)
     except Exception as e:
         logging.error("--- Error: %s\nresponse.text:%s", e, response.text)
         return input_item
@@ -174,7 +191,7 @@ async def check_docs(input_list: list) -> list:
                 responses[i]["score"] = avg
                 responses[i]["comment"] = "N/A"
 
-        responses = [item for item in responses if int(item["score"]) != 0]
+        responses = [item for item in responses if int(item["score"]) > 6]
         return sorted(responses, key=lambda x: int(x["score"]), reverse=True)
     else:
         return input_list
