@@ -9,4 +9,5 @@ docs_urls = {
     "mcp": "https://modelcontextprotocol.io/docs",
     "openai": "https://platform.openai.com/docs",
     "claude": "https://docs.anthropic.com/en/docs",
+    "c#":"https://learn.microsoft.com/en-us/dotnet/",
 }

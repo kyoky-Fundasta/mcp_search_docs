@@ -66,7 +66,17 @@ Option 2 :Claude no configureファイルに直接書き込む(以下はWindows�
     "--directory",
     "C:\\Users\\--path-to-the-docs-directory",
     "run",
-"main.py"
+    "main.py"
     ]
 }
 ```
+
+
+// "args": [
+      //   "run",
+      //   "--with",
+      //   "mcp[cli]",
+      //   "mcp",
+      //   "run",
+      //   "C:\\Users\\kota-\\OneDrive\\デスクトップ\\FundastA_AI\\MCP\\mcp_search_docs\\main.py"
+      // ]
